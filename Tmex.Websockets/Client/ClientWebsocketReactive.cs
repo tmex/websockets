@@ -81,6 +81,8 @@ namespace Tmex.Websockets.Client
 
         public async Task StopAsync() => await _manager.StopAsync();
 
+        public bool Reconnect() => _manager.Reconnect();
+
         private async Task<WebSocket> ConnectDefaultSocketAsync(Uri uri, CancellationToken token = default(CancellationToken))
         {
             var socket = new ClientWebSocket();

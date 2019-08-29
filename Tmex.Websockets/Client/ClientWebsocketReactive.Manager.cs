@@ -33,6 +33,7 @@ namespace Tmex.Websockets.Client
             private readonly AutoResetEvent _socketChangeCompleted = new AutoResetEvent(false);
             private readonly object _socketLock = new object();
             private WebSocket _newSocket;
+            private volatile bool _manualReconnect = false;
 
             private long _socketId = 1L;
             private readonly ConcurrentQueue<WsMessageWrapper> _sendingQueue = new ConcurrentQueue<WsMessageWrapper>();
@@ -152,6 +153,14 @@ namespace Tmex.Websockets.Client
                 });
             }
 
+            public bool Reconnect()
+            {
+                if (!IsRunning)
+                    return false;
+                _manualReconnect = true;
+                return true;
+            }
+
             public void Send(WsMessage msg)
             {
                 _sendingQueue.Enqueue(new WsMessageWrapper
@@ -187,8 +196,9 @@ namespace Tmex.Websockets.Client
                         {
                             socket = OpenSocket();
                         }
-                        else if (socket.State == WebSocketState.Closed || socket.State == WebSocketState.Aborted)
+                        else if (_manualReconnect || socket.State == WebSocketState.Closed || socket.State == WebSocketState.Aborted)
                         {
+                            _manualReconnect = false;
                             CloseSocket(socket);
                             socket = null;
                             State = ConnectionState.Closed;

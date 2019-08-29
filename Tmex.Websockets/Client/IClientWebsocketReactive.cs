@@ -42,6 +42,11 @@ namespace Tmex.Websockets.Client
         Task StopAsync();
 
         /// <summary>
+        /// Force reconnect if running. Returns false if not running.
+        /// </summary>
+        bool Reconnect();
+
+        /// <summary>
         /// Create and send binary message
         /// </summary>
         /// <returns>message that was sent or exception</returns>
