@@ -57,6 +57,8 @@ namespace Tmex.Websockets.Client
 
             public bool IsRunning { get; private set; }
 
+            public TimeSpan ReconnectCooldown { get; set; } = TimeSpan.FromSeconds(1);
+
             public Manager(ILogger logger, ConnectWebSocketAsyncDelegate factory)
             {
                 _logger = logger;
@@ -454,9 +456,8 @@ namespace Tmex.Websockets.Client
                     try { socket.Dispose(); }
                     catch (Exception) { }
 
-                    // todo configurable delay
                     // todo reconnect attempts
-                    SetConnectionDelay(TimeSpan.FromSeconds(1));
+                    SetConnectionDelay(ReconnectCooldown);
                 }
             }
 
